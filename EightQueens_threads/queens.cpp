@@ -39,6 +39,7 @@ void Queens::on_StartButton_clicked()
     thread.setRunning(true);
 
     srand(time(NULL));
+    rand();
 
     /* Can't refresh and start while processing */
     ui->RefreshButton->setEnabled(false);
