@@ -85,8 +85,7 @@ void Queens::on_RefreshButton_clicked()
 /*------------------------------------------------------------------------------------------------*/
 void Queens::on_CloseButton_clicked()
 {
-//    thread.quit();
-    thread.terminate();
+    thread.setFinished(true);
     QApplication::exit();
 }
 

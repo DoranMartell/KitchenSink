@@ -237,7 +237,6 @@ void QueenThread::run()
     if (!finished() && running())
     {
         placeQueen();
-        quit();
     }
 
     if (finished())
@@ -245,10 +244,10 @@ void QueenThread::run()
         /* Once it is done we are able to click Refresh again */
          /* ... and unable to click Stop as program stopped anyway */
         emit refreshOnStopOff();
+        return;
 //        printBoardNStatus(sleeptime, "All 8 queens were placed!", sleeptime*1000);
-
-        quit();
     }
+
 }
 
 /*------------------------------------------------------------------------------------------------*/
