@@ -1,0 +1,123 @@
+#include "procthread.h"
+#include <QMessageBox>
+#include <QDebug>
+//#include <stdlib.h>
+
+ProcThread::ProcThread()
+{
+
+}
+/*-------------------------------------------------------------------------------------------------------*/
+bool ProcThread::Killed() const
+{
+    return m_Killed;
+}
+/*-------------------------------------------------------------------------------------------------------*/
+void ProcThread::setKilled(bool Killed)
+{
+    if (m_Killed == Killed)
+        return;
+
+    m_Killed = Killed;
+    emit KilledChanged(Killed);
+
+    ::close(connectionsocket);
+}
+/*-------------------------------------------------------------------------------------------------------*/
+void ProcThread::run()
+{
+    qDebug() << "Estabilish connection Thread started";
+    qDebug() << "Server is listening to port" << portNo;
+    sprintf(buff, "Server is listening to port %d", portNo);
+    emit PrintMessage();
+
+    /* build the server's internet address */
+    BuildServerAddr();
+
+    /* socket(): creating listening socket */
+    if ((listensocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        emit ErrorOccured("Error occured while creating a listening socket!");
+        return;
+    }
+
+    /* bind(): associate the listening socket with a port */
+    if (bind(listensocket, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
+    {
+        emit ErrorOccured("Error binding listening socket with a port!");
+        return;
+    }
+
+    /* listen(): make a listening socket ready to accept connection requests */
+    if (listen(listensocket, BACKLOG) < 0) /* BACKLOG - how many connections are possible */
+    {
+        emit ErrorOccured("Error listening!");
+        return;
+    }
+    qDebug() << "After listen()";
+
+    EstabilishConnection(); /* main loop */
+
+    qDebug() << "Estabilish connection Thread is going to die";
+    return;
+}
+/*--------------------------------------------------------------------------------------------------------------*/
+void ProcThread::EstabilishConnection()
+{
+    socklen_t clientlen;
+    clientlen = sizeof(clientaddr);
+
+    int n; /* number of bytes read in a message */
+
+    /* make socket nonblocking so accept() wouldn't wait for connection forever */
+    //fcntl(connectionsocket, F_SETFL, fcntl(connectionsocket, F_GETFL, 0) | O_NONBLOCK);
+
+    while (!Killed())
+    {
+
+        /* accept(): wait for a connection request */
+        if ( (connectionsocket = accept(listensocket, (struct sockaddr *) &clientaddr, &clientlen)) < 0)
+        {
+             //emit ErrorOccured("Error on accept!");
+                            /* high possiblity that Shut Down is pressed while thread is stuck here */
+             return;
+        }
+        qDebug() << "Someone is trying to connect!";
+
+        
+        
+        /* read(): read message from the client */
+        //memset(buff, 0, BUFSIZE); /* was moved to Server::PrintMessInWindow() */
+        if ((n = read(connectionsocket, buff, BUFSIZE)) < 0)
+        {
+            emit ErrorOccured("Error reading message from client!");
+            return;
+        }
+        qDebug() << "After read()";
+
+        if (Killed())
+        {
+            return;
+        }
+
+        emit PrintMessage();
+
+        ::close(connectionsocket); /* otherwise Qt is confused which close() to call */
+
+    }
+}
+/*--------------------------------------------------------------------------------------------------------------*/
+void ProcThread::setPort(int value)
+{
+    portNo = value;
+}
+/*--------------------------------------------------------------------------------------------------------------*/
+void ProcThread::BuildServerAddr()
+{
+    /* build the server's internet address */
+    memset((char *) &serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET; /* we are using the Internet */
+    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); /* accept reqs to any IP addr */
+    serveraddr.sin_port = htons((unsigned short) portNo); /* port to listen on */
+}
+
