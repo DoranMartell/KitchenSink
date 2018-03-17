@@ -18,7 +18,7 @@
 using namespace std;
 
 int p; /* port number */
-struct sockaddr_in serveraddr; /* server's addr */
+struct sockaddr_in serveraddr;
 
 std::mutex mu;
 bool finishCaught;
@@ -41,9 +41,9 @@ void BuildServerAddr()
 {
 	/* building server's internet address */
 	memset((char *) &serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET; /* we are using the Internet */
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); /* accept reqs to any IP addr */
-	serveraddr.sin_port = htons((unsigned short) p); /* port to listen on */
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_port = htons((unsigned short) p);
 }
 
 void AskPort()
@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
 	vector<std::thread> t(2); /* array of threads - one thread per each client */
 	string mess_to_print;
 
-	/* starting listening on a socket */
+	/* creating a socket for listening */
 	listen_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (listen_sock < 0) 
 	{
