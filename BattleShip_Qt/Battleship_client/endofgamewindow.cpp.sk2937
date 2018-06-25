@@ -1,0 +1,56 @@
+#include "endofgamewindow.h"
+#include "ui_endofgamewindow.h"
+
+EndOfGameWindow::EndOfGameWindow(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::EndOfGameWindow)
+{
+    ui->setupUi(this);
+
+    /* hide cross button, only Minimize button present */
+    setWindowFlags(Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint);
+}
+/*----------------------------------------------------------------------------------*/
+void EndOfGameWindow::showVictoryWindowSlot(QString Name)
+{
+    qDebug() << "Going to show Victory Window...";
+    ui->TextLabel->setText(QString("Congratulations, " + Name + ",\nyou are victorious! " +
+            "Would you like\nto continue your adventures, reassemble your fleet\nand fight some new enemies?"));
+    ui->windowTitle("Victory");
+    emit DisableClientWindowSig(false);
+    show();
+}
+/*----------------------------------------------------------------------------------*/
+void EndOfGameWindow::on_RepeatButton_clicked()
+{
+    qDebug() << "Player chose to play again under previous alias, fetch FillTheGrid Window";
+
+    SetStartGame(false);
+
+    emit HideClientWindowSig();
+    emit ShowFillTheGridWindowSig();
+
+    hide();
+}
+/*----------------------------------------------------------------------------------*/
+void EndOfGameWindow::on_EnoughButton_clicked()
+{
+    qDebug() << "Player chose to leave, so we should gracefully join all threads and close all connections";
+
+    emit SendBbyeSig();
+
+    close();
+}
+/*----------------------------------------------------------------------------------*/
+void EndOfGameWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug() << "EndOfGameWindow is about to be closed...";
+    emit CloseAllOthersSig();
+    event->QCloseEvent::accept();
+}
+/*----------------------------------------------------------------------------------*/
+EndOfGameWindow::~EndOfGameWindow()
+{
+    delete ui;
+}
+
