@@ -153,17 +153,25 @@ void TestJosephusPermutation(int step_size)
 	cout << "Testing Josephus Permutation with ringed list with step_size = " << step_size << endl << endl;
 
 	vector<NoncopyableInt> numbers;
-	numbers.push_back({0});
-	numbers.push_back({1});
-	numbers.push_back({2});
-	numbers.push_back({3});
-	numbers.push_back({4});
-	numbers.push_back({5});
-	numbers.push_back({6});
-	numbers.push_back({7});
-	numbers.push_back({8});
-	numbers.push_back({9});
-	// iota(numbers.begin(), numbers.end(), 0);
+	// numbers.push_back({0});
+	// numbers.push_back({1});
+	// numbers.push_back({2});
+	// numbers.push_back({3});
+	// numbers.push_back({4});
+	// numbers.push_back({5});
+	// numbers.push_back({6});
+	// numbers.push_back({7});
+	// numbers.push_back({8});
+	// numbers.push_back({9});
+
+	vector<int> copyable_numbers(10);
+	iota(copyable_numbers.begin(), copyable_numbers.end(), 0);
+
+	for (int i = 0; i < copyable_numbers.size(); ++i)
+	{
+		numbers.push_back(NoncopyableInt(copyable_numbers[i]));
+	}
+	copyable_numbers.clear();
 
 	Ring<NoncopyableInt> rng = MakeARingFromRange(numbers.begin(), numbers.end());
 	rng.PrintTheRingForward();

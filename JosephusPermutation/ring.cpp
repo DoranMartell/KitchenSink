@@ -210,7 +210,7 @@ T Ring<T>::PopCurrPtr()
 	{
 		// cout << "currPtr points nowhere but the list is empty - SOMETHING HAS GONE WRONG!" << endl;
 		// return 0;
-		throw runtime_error("currPtr points nowhere but the list is empty - SOMETHING HAS GONE WRONG!");
+		throw runtime_error("currPtr points nowhere but the list is not empty - SOMETHING HAS GONE WRONG!");
 	}
 
 	/* if the ringed list is not empty, we at least can be sure that currPtr points at some value */

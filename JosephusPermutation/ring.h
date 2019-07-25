@@ -7,7 +7,7 @@ using namespace std;
 
 
 /* Ring template is a sort of linked list with one special feature:
-	its last element's nextPtr points to the head of the list (the first added element) */
+	its last element's nextPtr points to the head of the list */
 template<typename T>
 class Ring
 {
@@ -22,7 +22,7 @@ private:
 
 		Node() = delete;
 
-		/* the only to move non-copyable value inside of Node is in initializers list,
+		/* the only way to move non-copyable value inside of Node is in initializers list,
 			it is impossible to do from constructor's body */  
 		Node(T && element_of_noncopyable_type) : value(move(element_of_noncopyable_type))
 		{
@@ -98,7 +98,12 @@ struct NoncopyableInt
   NoncopyableInt(const NoncopyableInt&) = delete;
   NoncopyableInt& operator=(const NoncopyableInt&) = delete;
 
-  NoncopyableInt(NoncopyableInt&&) = default;
+  NoncopyableInt(NoncopyableInt&&)=default;
+
+  NoncopyableInt(int val) : value(val)
+  {
+  }
+
   NoncopyableInt& operator=(NoncopyableInt&&) = default;
 };
 
